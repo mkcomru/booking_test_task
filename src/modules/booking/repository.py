@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, time
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,3 +29,12 @@ class BookingRepository(BaseRepository[Booking]):
         if booking is None:
             return None
         return await self._update(id, {"status": BookingStatus.CANCELLED})
+
+    async def is_slot_booked(self, booking_date: date, booking_time: time) -> bool:
+        stmt = select(self.model).where(
+            self.model.booking_date == booking_date,
+            self.model.booking_time == booking_time,
+            self.model.status == BookingStatus.ACTIVE,
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none() is not None
