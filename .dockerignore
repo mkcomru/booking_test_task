@@ -56,4 +56,8 @@ README.md
 !.env.example
 .secrets.baseline
 
+# Data
+data/
+*.db
+
 
