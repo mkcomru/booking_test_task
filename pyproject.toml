@@ -10,6 +10,7 @@ dependencies = [
     "pydantic>=2.13.4",
     "pydantic-settings>=2.15.0",
     "sqlalchemy>=2.0.52",
+    "structlog>=26.1.0",
 ]
 
 [tool.ruff]
@@ -25,7 +26,6 @@ select = [
     "N",    # pep8-naming
     "UP",   # pyupgrade
     "B",    # flake8-bugbear
-    "A",    # flake8-builtins
     "C4",   # flake8-comprehensions
     "SIM",  # flake8-simplify
     "TCH",  # flake8-type-checking
@@ -38,4 +38,5 @@ known-first-party = ["src"]
 [dependency-groups]
 dev = [
     "pre-commit>=4.6.2",
+    "ruff>=0.16.4",
 ]
