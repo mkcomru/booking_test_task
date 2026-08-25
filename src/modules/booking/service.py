@@ -17,7 +17,9 @@ class BookingService:
         is_booked = await self.repo.is_slot_booked(data.booking_date, data.booking_time)
         if is_booked:
             raise SlotAlreadyBookedError
-        return await self.repo.create(**data.model_dump())
+        booking = await self.repo.create(**data.model_dump())
+        await self._session.commit()
+        return booking
 
     async def get(self, booking_id: int) -> Booking:
         booking = await self.repo.get(booking_id)
@@ -32,4 +34,5 @@ class BookingService:
         booking = await self.repo.cancel(booking_id)
         if booking is None:
             raise BookingNotFoundError
+        await self._session.commit()
         return booking

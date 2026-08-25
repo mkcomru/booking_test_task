@@ -12,7 +12,7 @@ from src.modules.core.settings import get_settings
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
-    setup_logging(debug=settings.debug)
+    setup_logging(environment=settings.environment, debug=settings.debug)
 
     yield
 

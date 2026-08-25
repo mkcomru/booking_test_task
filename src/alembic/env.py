@@ -4,6 +4,7 @@ from logging.config import fileConfig
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
+from src.modules.booking.models import Booking  # noqa: F401
 from src.modules.core.database import BaseModel
 
 config = context.config
