@@ -1,11 +1,14 @@
 from datetime import date
 
+import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.modules.booking.exceptions import BookingNotFoundError, SlotAlreadyBookedError
 from src.modules.booking.models import Booking
 from src.modules.booking.repository import BookingRepository
 from src.modules.booking.schemas import BookingCreateRequest
+
+log = structlog.get_logger()
 
 
 class BookingService:
@@ -16,6 +19,7 @@ class BookingService:
     async def create(self, data: BookingCreateRequest) -> Booking:
         is_booked = await self.repo.is_slot_booked(data.booking_date, data.booking_time)
         if is_booked:
+            log.warning("booking.slot_already_booked", date=data.booking_date, time=data.booking_time)
             raise SlotAlreadyBookedError
         booking = await self.repo.create(**data.model_dump())
         await self._session.commit()
@@ -24,6 +28,7 @@ class BookingService:
     async def get(self, booking_id: int) -> Booking:
         booking = await self.repo.get(booking_id)
         if booking is None:
+            log.warning("booking.not_found", booking_id=booking_id)
             raise BookingNotFoundError
         return booking
 
@@ -33,6 +38,7 @@ class BookingService:
     async def cancel(self, booking_id: int) -> Booking:
         booking = await self.repo.cancel(booking_id)
         if booking is None:
+            log.warning("booking.not_found", booking_id=booking_id)
             raise BookingNotFoundError
         await self._session.commit()
         return booking
